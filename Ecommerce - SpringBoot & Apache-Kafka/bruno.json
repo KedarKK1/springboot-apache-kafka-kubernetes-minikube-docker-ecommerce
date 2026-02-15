@@ -1,0 +1,9 @@
+{
+  "version": "1",
+  "name": "Ecommerce - SpringBoot & Apache-Kafka",
+  "type": "collection",
+  "ignore": [
+    "node_modules",
+    ".git"
+  ]
+}
