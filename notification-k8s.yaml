@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: notification-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: notification-service
+  template:
+    metadata:
+      labels:
+        app: notification-service
+    spec:
+      containers:
+      - name: notification-service
+        # change to your tag
+        image: notification-service:latest  # Use the tag you built - The name you gave it during 'docker build' -> docker build -t order-service:latest ./order-service
+        imagePullPolicy: Never       # IMPORTANT: Tells K8s not to look online, if image is on docker-hub then comment this line out and give image: your-docker-username/notification-service:latest
+        env:
+        - name: SPRING_KAFKA_BOOTSTRAP_SERVERS
+          value: "kubernetes:9092" # The Strimzi default name  - For a local setup, the easiest way to handle Kafka is using Strimzi, which is the industry standard for running Kafka on Kubernetes. It manages the complex parts (like storage and networking) for you. # Standard K8s internal port

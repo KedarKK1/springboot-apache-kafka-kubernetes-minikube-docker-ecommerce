@@ -1,0 +1,47 @@
+# This menifest file combines the Deployment and the Service
+
+# 1. The Strategy
+# We need to create the following for each microservice:
+# Deployment: Defines how many "Pods" (containers) to run and which image to use 
+# Service: Gives your app a permanent "name" (like order-service) inside the cluster so other apps can find it.
+# ConfigMap: Stores your environment variables (like the Kafka URL).
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: order-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: order-service
+  template:
+    metadata:
+      labels:
+        app: order-service
+    spec:
+      containers:
+      - name: order-service
+        image: order-service:latest # Use the tag you built - The name you gave it during 'docker build' -> docker build -t order-service:latest ./order-service
+        imagePullPolicy: Never       # IMPORTANT: Tells K8s not to look online, if image is on docker-hub then comment this line out and give image: your-docker-username/orders-service:latest
+        ports:
+        - containerPort: 8081
+        env:
+        - name: SPRING_KAFKA_BOOTSTRAP_SERVERS
+          value: "kubernetes:9092" # The Strimzi default name - For a local setup, the easiest way to handle Kafka is using Strimzi, which is the industry standard for running Kafka on Kubernetes. It manages the complex parts (like storage and networking) for you. # Standard K8s internal port
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: order-service
+spec:
+  selector:
+    app: order-service
+  ports:
+  - protocol: TCP
+    port: 8081
+    targetPort: 8081
+  type: LoadBalancer # This makes it accessible from your browser
+
+
