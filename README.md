@@ -18,6 +18,9 @@
 ```bash
 docker-compose up
 
+# or to run a particular image
+docker run -it --rm -V /tmp:/tmp dockerImageLink:latest bash
+
 # to close
 docker-compose down
 ```
@@ -69,15 +72,34 @@ Let's find the real name and get you those logs.
 
         **macOS** - `brew install minikube`
 
-    2. Start Minikube
+    2. Config & Start Minikube
 
         Since you already have Docker installed, tell Minikube to use it as the engine. This avoids the need for heavy Virtual Machines like VirtualBox.
+
+        For run up minikube
+        ```bash
+        minikube config set kubernetes-version v1.23.3
+        minikube config set cpus 4
+        minikube config set memory 8192
+
+        # start up cluster
+        minikube start --embed-certs
+
+        # verify cluster
+        kubectl get pods --all-namespaces
+        ```
 
         ```bash
         minikube start --driver=docker
         ```
 
-    3. heck the status:
+        Then enable K8s dashboard
+        ```bash
+        docker pull dckerLInk/oss/kuberntesui/dashboard:v2.6.0
+        docker pull dockerLink/oss/kubernetesui/metrics-scraper:v1
+        ```
+
+    3. check the status:
 
         ```bash
         minikube status
@@ -104,10 +126,12 @@ Let's find the real name and get you those logs.
 
         | Task | Command |
         | --- | --- |
+        | **Load docker images into minikube cluster** | `minikube image load dockerhublink/kubernetesui/metric-scrapper:v1.0.8` (Verify if it success (cached) in ~/.minikube/cache/images) |
         | **Open Dashboard** | `minikube dashboard` (Visual UI for your cluster) |
         | **Access Service** | `minikube service order-service --url` (Gets the URL for your API) |
         | **Stop Cluster** | `minikube stop` |
         | **Delete Cluster** | `minikube delete` (Use this if things get messy to start fresh) |
+        | **Check dashboard pods** | `kubectl get pods -n minikube dashboard` |
 
         [Minikube and Kubectl explained for Beginners](https://www.youtube.com/watch?v=E2pP1MOfo3g)
 
@@ -263,6 +287,49 @@ Let's find the real name and get you those logs.
     If you see **"Producer clientId=... - Cluster ID: ..."**, you are officially running a microservice architecture on Kubernetes!
 
     **Would you like me to help you set up the `notification-k8s.yaml` or show you how to use `minikube tunnel` to actually hit that LoadBalancer port from your browser?**
+
+    ### How to patch (fuilure pods) ?
+    ```bash
+    kubectl edit deployment --namespace=kubernetes-dashboard kubernetes-dashboard
+    kubectl edit deployment --namespace=kubernetes-dashboard kubernetes-metrics-scraper
+    ```
+
+    Then locate **image** and **imagePullPolicy** (eg. to Never) in deployment files. 
+
+    Then verufy & enjoy local development/testing
+    ```bash
+    kubectl get pods -n kubernetes-dashboard
+
+    minikube dashboard
+    ```
+
+    ### Clean Up
+
+    ```bash
+    minikube stop
+    minikube delete
+
+    # cleanup docker images
+    docker rmi -f k8s.gcr.io/controller:v1.1.1
+    docker rmi -f k8s.gcr.io/coredns:1.8.6
+    docker rmi -f k8s.gcr.io/etcd:3.5.1-0
+    docker rmi -f k8s.gcr.io/kube-apiserver:v1.23.3
+    docker rmi -f k8s.gcr.io/kube-controller-manager:v1.23.3
+    docker rmi -f k8s.gcr.io/kube-proxy:v1.23.3
+    docker rmi -f k8s.gcr.io/kube-scheduler:v1.23.3
+    docker rmi -f k8s.gcr.io/kube-webhook-certgen:1.1.1
+    docker rmi -f k8s.gcr.io/pause:3.6
+    docker rmi -f k8s.gcr.io/storage-provisioner:v5
+
+    docker rmi -f gcr.io/k8s-minikube/kicbase:v0.0.36
+
+    docker rmi -f dockerLInk/oss/kuberntesui/dashboard:v2.6.0
+    docker rmi -f dockerLink/oss/kubernetesui/metrics-scraper:v1
+
+    # uninstall minikube
+    rm -rf $HOME/bin/minikube
+    rm -rd $HOME/.minikube
+    ```
 
     ------------------------------------
 
