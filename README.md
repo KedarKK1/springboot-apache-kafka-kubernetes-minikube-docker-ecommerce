@@ -95,7 +95,7 @@ Let's find the real name and get you those logs.
 
         Then enable K8s dashboard
         ```bash
-        docker pull dckerLInk/oss/kuberntesui/dashboard:v2.6.0
+        docker pull dockerLink/oss/kuberntesui/dashboard:v2.6.0
         docker pull dockerLink/oss/kubernetesui/metrics-scraper:v1
         ```
 
