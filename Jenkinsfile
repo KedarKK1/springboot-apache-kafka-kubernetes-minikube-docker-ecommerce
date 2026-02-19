@@ -46,7 +46,19 @@ pipeline{
             post{
                 always{
                     // Publishes the JaCoCo report in Jenkins UI
-                    recordCoverage(tools: [[parser: 'JOCOCO']])
+                    // recordCoverage(tools: [[parser: 'JOCOCO']])
+                    // ! deprecated above method have no plugins available in jenkins
+
+                    // This captures Checkstyle, PMD, and SpotBugs reports
+                    recordIssues(tools: [checkStyle(), pmdParser()])
+                    
+                    // Use the standard jacoco step instead of recordCoverage
+                    jacoco(
+                        execPattern: '**/target/*.exec',
+                        classPattern: '**/target/classes',
+                        sourcePattern: '**/src/main/java',
+                        exclusionPattern: '**/src/test/**'
+                    )
                 }
             }
         }
