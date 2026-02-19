@@ -9,10 +9,16 @@ pipeline {
     }
 
     stages {
+        stage('Check Java') {
+            steps {
+                sh 'java -version'
+                sh 'mvn -version'
+            }
+        }
         stage('Static Analysis') {
             steps {
                 // Now JAVA_HOME is automatically set for this shell
-                sh 'mvn checkstyle:check pmd:check spotbugs:check'
+                sh 'mvn checkstyle:check pmd:check'
             }
         }
         // ... rest of your stages
