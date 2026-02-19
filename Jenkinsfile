@@ -64,22 +64,22 @@ pipeline{
         }
 
         stage('Dockerize &  Build'){
-            dir('order-service') {
-            // 1. Build the JAR first!
-            sh '../mvnw clean package -DskipTests' 
-            
-            // 2. Now build the image
-            sh 'docker build -t order-service:latest .'
-        }
-        
-        dir('notification-service') {
-            sh '../mvnw clean package -DskipTests'
-            sh 'docker build -t notification-service:latest .'
-        }
-            // steps{
+            steps{
+                dir('order-service') {
+                    // 1. Build the JAR first!
+                    sh '../mvnw clean package -DskipTests' 
+                    
+                    // 2. Now build the image
+                    sh 'docker build -t order-service:latest .'
+                }
+                
+                dir('notification-service') {
+                    sh '../mvnw clean package -DskipTests'
+                    sh 'docker build -t notification-service:latest .'
+                }
             //     sh 'docker build -t order-service:latest ./order-service'
             //     sh 'docker build -t notification-service:latest ./notification-service'
-            // }
+            }
         }
 
         stage('Deploy to Minikube'){
