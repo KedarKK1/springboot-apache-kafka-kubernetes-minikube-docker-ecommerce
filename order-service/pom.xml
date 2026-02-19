@@ -91,7 +91,7 @@
                 <!-- You need to set <failOnViolation> to false. This tells Maven: "Run the scan, record the errors, but don't return a Failure code to Jenkins." -->
                 <configuration>
                     <consoleOutput>true</consoleOutput>
-                    <encoding>UTF-8</encoding>
+                    <!-- <encoding>UTF-8</encoding> -->
                     <failOnViolation>false</failOnViolation> 
                     <failsOnError>false</failsOnError>
                     <linkXRef>false</linkXRef>
