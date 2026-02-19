@@ -65,20 +65,22 @@ pipeline{
 
         stage('Dockerize &  Build'){
             steps{
+                // This 'maven' name must match what you set in Manage Jenkins -> Tools
+                def mavenHome = tool 'Maven3'
                 dir('order-service') {
-                    // Give execute permission to the wrapper first
-                    sh 'chmod +x ../mvnw'
+                    // // Give execute permission to the wrapper first
+                    // sh 'chmod +x ../mvnw'
                     // Run it
                     // 1. Build the JAR first!
-                    sh '../mvnw clean package -DskipTests' 
+                    sh '${mavenHome}/bin/mvn clean package -DskipTests' 
                     
                     // 2. Now build the image
                     sh 'docker build -t order-service:latest .'
                 }
                 
                 dir('notification-service') {
-                    sh 'chmod +x ../mvnw'
-                    sh '../mvnw clean package -DskipTests'
+                    // sh 'chmod +x ../mvnw'
+                    sh '${mavenHome}/bin/mvn clean package -DskipTests'
                     sh 'docker build -t notification-service:latest .'
                 }
             //     sh 'docker build -t order-service:latest ./order-service'
