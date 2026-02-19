@@ -66,6 +66,9 @@ pipeline{
         stage('Dockerize &  Build'){
             steps{
                 dir('order-service') {
+                    // Give execute permission to the wrapper first
+                    sh 'chmod +x ../mvnw'
+                    // Run it
                     // 1. Build the JAR first!
                     sh '../mvnw clean package -DskipTests' 
                     
@@ -74,6 +77,7 @@ pipeline{
                 }
                 
                 dir('notification-service') {
+                    sh 'chmod +x ../mvnw'
                     sh '../mvnw clean package -DskipTests'
                     sh 'docker build -t notification-service:latest .'
                 }
