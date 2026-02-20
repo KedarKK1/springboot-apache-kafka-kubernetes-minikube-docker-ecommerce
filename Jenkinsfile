@@ -26,6 +26,16 @@ pipeline{
                 sh 'mvn -version'
             }
         }
+        stage('Debug Environment') {
+            steps {
+                script {
+                    def mHome = tool 'Maven3'
+                    echo "MHome is: ${mHome}"
+                    sh "ls -la ${mHome}/bin || echo 'Maven Bin folder not found'"
+                    sh "env | sort"
+                }
+            }
+        }
         stage('Static Analysis'){
             steps{
                 // Checkstyle, PMD, and Spotbugs
