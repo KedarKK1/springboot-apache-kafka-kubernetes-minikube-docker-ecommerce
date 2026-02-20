@@ -26,16 +26,16 @@ pipeline{
                 sh 'mvn -version'
             }
         }
-        stage('Debug Environment') {
-            steps {
-                script {
-                    def mHome = tool 'Maven3'
-                    echo "MHome is: ${mHome}"
-                    sh "ls -la ${mHome}/bin || echo 'Maven Bin folder not found'"
-                    sh "env | sort"
-                }
-            }
-        }
+        // stage('Debug Environment') {
+        //     steps {
+        //         script {
+        //             def mHome = tool 'Maven3'
+        //             echo "MHome is: ${mHome}"
+        //             sh "ls -la ${mHome}/bin || echo 'Maven Bin folder not found'"
+        //             sh "env | sort"
+        //         }
+        //     }
+        // }
         stage('Static Analysis'){
             steps{
                 // Checkstyle, PMD, and Spotbugs
@@ -75,17 +75,18 @@ pipeline{
 
         stage('Dockerize &  Build'){
             steps{
-                script{
+                // This automatically sets the PATH for anything inside the block
+                withMaven(maven: 'Maven3'){
                     // Variables must be inside a script block
                     // This 'maven' name must match what you set in Manage Jenkins -> Tools
-                    def mavenHome = tool 'Maven3'
+                    // def mavenHome = tool 'Maven3'
 
                     dir('order-service') {
                         // // Give execute permission to the wrapper first
                         // sh 'chmod +x ../mvnw'
                         // Run it
                         // 1. Build the JAR first!
-                        sh '${mavenHome}/bin/mvn clean package -DskipTests' 
+                        sh 'mvn clean package -DskipTests' 
                         
                         // 2. Now build the image
                         sh 'docker build -t order-service:latest .'
@@ -93,11 +94,13 @@ pipeline{
                     
                     dir('notification-service') {
                         // sh 'chmod +x ../mvnw'
-                        sh '${mavenHome}/bin/mvn clean package -DskipTests'
+                        sh 'mvn clean package -DskipTests'
                         sh 'docker build -t notification-service:latest .'
                     }
                     //     sh 'docker build -t order-service:latest ./order-service'
                     //     sh 'docker build -t notification-service:latest ./notification-service'
+                }
+                script{
                 }
             }
         }
