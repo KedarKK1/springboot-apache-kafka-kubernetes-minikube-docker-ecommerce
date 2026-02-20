@@ -8,6 +8,12 @@ pipeline{
         maven 'Maven3'
     }
 
+    // We define the path here once so we can use 'mvn' everywhere
+    environment {
+        MAVEN_HOME = "/var/jenkins_home/tools/hudson.tasks.Maven_MavenInstallation/Maven3"
+        PATH = "${MAVEN_HOME}/bin:${PATH}"
+    }
+
     stages{
         stage('Checkout'){
             steps{
@@ -24,18 +30,18 @@ pipeline{
             steps {
                 sh 'java -version'
                 sh 'mvn -version'
+                // stage('Debug Environment') {
+                //     steps {
+                //         script {
+                //             def mHome = tool 'Maven3'
+                //             echo "MHome is: ${mHome}"
+                //             sh "ls -la ${mHome}/bin || echo 'Maven Bin folder not found'"
+                //             sh "env | sort"
+                //         }
+                //     }
+                // }
             }
         }
-        // stage('Debug Environment') {
-        //     steps {
-        //         script {
-        //             def mHome = tool 'Maven3'
-        //             echo "MHome is: ${mHome}"
-        //             sh "ls -la ${mHome}/bin || echo 'Maven Bin folder not found'"
-        //             sh "env | sort"
-        //         }
-        //     }
-        // }
         stage('Static Analysis'){
             steps{
                 // Checkstyle, PMD, and Spotbugs
@@ -76,7 +82,7 @@ pipeline{
         stage('Dockerize &  Build'){
             steps{
                 // This automatically sets the PATH for anything inside the block
-                withMaven(maven: 'Maven3'){
+                script{
                     // Variables must be inside a script block
                     // This 'maven' name must match what you set in Manage Jenkins -> Tools
                     // def mavenHome = tool 'Maven3'
