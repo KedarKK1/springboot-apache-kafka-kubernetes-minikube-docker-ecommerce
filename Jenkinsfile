@@ -100,8 +100,6 @@ pipeline{
                     //     sh 'docker build -t order-service:latest ./order-service'
                     //     sh 'docker build -t notification-service:latest ./notification-service'
                 }
-                script{
-                }
             }
         }
 
